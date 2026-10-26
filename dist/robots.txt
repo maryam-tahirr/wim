@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://womeninmentoring.org/sitemap.xml
+Sitemap: https://maryam-tahirr.github.io/wim/sitemap.xml
