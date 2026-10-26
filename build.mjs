@@ -57,7 +57,7 @@ const jsonLd = {
 
 const template = readFileSync("index.html", "utf8");
 
-function page(r, jsAssets = "./assets/app.js", cssAsset = "./assets/app.css") {
+function page(r, jsAssets = "assets/app.js", cssAsset = "assets/app.css") {
   const url = SITE_URL + (r.path === "/" ? "/" : r.path);
   let html = template
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(r.title)}</title>`)
