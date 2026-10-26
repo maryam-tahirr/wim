@@ -7,7 +7,6 @@ import { dirname, join } from "node:path";
 
 const watch = process.argv.includes("--watch");
 const SITE_URL = (process.env.WIM_SITE_URL || "https://maryam-tahirr.github.io/wim").replace(/\/$/, "");
-//const SITE_URL = (process.env.WIM_SITE_URL || "https://womeninmentoring.org").replace(/\/$/, "");
 const FORM_ENDPOINT = process.env.WIM_FORM_ENDPOINT || "";
 const SHOW_VERIFY = process.env.WIM_SHOW_VERIFY === "false" ? "false" : "true";
 const routes = JSON.parse(readFileSync("src/routes-meta.json", "utf8"));
@@ -55,13 +54,25 @@ const jsonLd = {
   email: "info@womeninmentoring.org",
 };
 
+// Helper to calculate relative asset depth for nested routes (e.g. /about -> ../assets/app.js)
+function getAssetPrefix(routePath) {
+  if (routePath === "/" || routePath === "") return "./";
+  const segments = routePath.replace(/^\/|\/$/g, "").split("/").filter(Boolean);
+  return segments.length > 0 ? "../".repeat(segments.length) : "./";
+}
+
 const template = readFileSync("index.html", "utf8");
 
-function page(r, jsAssets = "assets/app.js", cssAsset = "assets/app.css") {
+function page(r) {
+  const prefix = getAssetPrefix(r.path);
+  const jsAssets = prefix + "assets/app.js";
+  const cssAsset = prefix + "assets/app.css";
+
   const url = SITE_URL + (r.path === "/" ? "/" : r.path);
   let html = template
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(r.title)}</title>`)
     .replace(/<meta\s+name="description"[\s\S]*?\/>/, `<meta name="description" content="${esc(r.description)}" />`);
+  
   const extra = [
     `<link rel="canonical" href="${url}" />`,
     `<meta name="robots" content="${r.noindex ? "noindex" : "index,follow"}" />`,
@@ -74,10 +85,12 @@ function page(r, jsAssets = "assets/app.js", cssAsset = "assets/app.css") {
     `<link rel="stylesheet" href="${cssAsset}" />`,
     r.path === "/" ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : "",
   ].join("\n    ");
+
   html = html.replace("</head>", `    ${extra}\n  </head>`);
-  //html = html.replace(/<script type="module" src="[^"]*"><\/script>/, `<script type="module" src="${jsAssets}"></script>`);
-  // Replace whatever script tag is in index.html with the compiled bundle path
-html = html.replace(/<script[\s\S]*?src="[^"]*main\.tsx"[^>]*><\/script>/, `<script type="module" src="${jsAssets}"></script>`);
+  
+  // Replace whatever script tag is in index.html with the depth-aware compiled bundle path
+  html = html.replace(/<script[\s\S]*?src="[^"]*main\.tsx"[^>]*><\/script>/, `<script type="module" src="${jsAssets}"></script>`);
+  
   return html;
 }
 
