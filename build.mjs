@@ -6,7 +6,8 @@ import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } fr
 import { dirname, join } from "node:path";
 
 const watch = process.argv.includes("--watch");
-const SITE_URL = (process.env.WIM_SITE_URL || "https://womeninmentoring.org").replace(/\/$/, "");
+const SITE_URL = (process.env.WIM_SITE_URL || "https://maryam-tahirr.github.io/wim").replace(/\/$/, "");
+//const SITE_URL = (process.env.WIM_SITE_URL || "https://womeninmentoring.org").replace(/\/$/, "");
 const FORM_ENDPOINT = process.env.WIM_FORM_ENDPOINT || "";
 const SHOW_VERIFY = process.env.WIM_SHOW_VERIFY === "false" ? "false" : "true";
 const routes = JSON.parse(readFileSync("src/routes-meta.json", "utf8"));
