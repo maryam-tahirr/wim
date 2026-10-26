@@ -75,7 +75,9 @@ function page(r, jsAssets = "./assets/app.js", cssAsset = "./assets/app.css") {
     r.path === "/" ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : "",
   ].join("\n    ");
   html = html.replace("</head>", `    ${extra}\n  </head>`);
-  html = html.replace(/<script type="module" src="[^"]*"><\/script>/, `<script type="module" src="${jsAssets}"></script>`);
+  //html = html.replace(/<script type="module" src="[^"]*"><\/script>/, `<script type="module" src="${jsAssets}"></script>`);
+  // Replace whatever script tag is in index.html with the compiled bundle path
+html = html.replace(/<script[\s\S]*?src="[^"]*main\.tsx"[^>]*><\/script>/, `<script type="module" src="${jsAssets}"></script>`);
   return html;
 }
 
